@@ -21,7 +21,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     ServerVersion.AutoDetect(mysqlConnection)));
 
 var app = builder.Build();
-
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
