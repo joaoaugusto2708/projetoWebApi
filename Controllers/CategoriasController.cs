@@ -18,7 +18,7 @@ namespace projetoWebApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            var categoria = _appDbContext.Categorias.ToList();
+            var categoria = _appDbContext.Categorias.AsNoTracking().ToList();
             if (categoria is null)
                 return NotFound("Categorias não encontrados");
             return categoria;
@@ -34,7 +34,7 @@ namespace projetoWebApi.Controllers
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriaProdutos(int id)
         {
-            return _appDbContext.Categorias.Include(p => p.Produtos).ToList();
+            return _appDbContext.Categorias.Include(p => p.Produtos).Where(c=> c.CategoriaId <= 5).ToList();
         }
         [HttpPost]
         public ActionResult Post([FromBody] Categoria categoria)

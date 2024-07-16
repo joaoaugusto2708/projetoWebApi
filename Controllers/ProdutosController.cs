@@ -17,7 +17,7 @@ namespace projetoWebApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
-            var produtos = _appDbContext.Produtos.ToList();
+            var produtos = _appDbContext.Produtos.Take(10).ToList();
             if (produtos is null)
                 return NotFound("Produtos não encontrados");
             return produtos;
