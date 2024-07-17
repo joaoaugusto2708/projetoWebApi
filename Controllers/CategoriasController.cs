@@ -12,9 +12,11 @@ namespace projetoWebApi.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly AppDbContext _appDbContext;
-        public CategoriasController(AppDbContext context)
+        private readonly ILogger _logger;
+        public CategoriasController(AppDbContext context, ILogger logger)
         {
             _appDbContext = context;
+            _logger = logger;
         }
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
@@ -22,6 +24,7 @@ namespace projetoWebApi.Controllers
         {
             try
             {
+                _logger.LogInformation($"===== Metodo Get Categorias Produto {Thread.CurrentThread.ToString}=======");
                 var categoria = _appDbContext.Categorias.AsNoTracking().ToList();
                 if (categoria is null)
                     return NotFound("Categorias não encontrados");
