@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using projetoWebApi.Context;
+using projetoWebApi.Filters;
 using projetoWebApi.Models;
 
 namespace projetoWebApi.Controllers
@@ -16,6 +17,7 @@ namespace projetoWebApi.Controllers
             _appDbContext = context;
         }
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
             try

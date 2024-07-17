@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using projetoWebApi.Context;
 using projetoWebApi.Extensions;
+using projetoWebApi.Filters;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddControllers()
         //Ignora Referencia Ciclica
             .ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+builder.Services.AddScoped<ApiLoggingFilter>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
