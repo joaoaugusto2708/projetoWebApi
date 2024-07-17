@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using projetoWebApi.Context;
 using projetoWebApi.Extensions;
 using projetoWebApi.Filters;
+using projetoWebApi.Logging;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,10 @@ builder.Services.AddControllers()
             .ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddScoped<ApiLoggingFilter>();
-
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    LogLevel = LogLevel.Information,
+}));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
