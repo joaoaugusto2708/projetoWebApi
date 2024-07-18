@@ -48,13 +48,13 @@ namespace projetoWebApi.Migrations
 
             migrationBuilder.UpdateData(
                 table: "Categorias",
-                keyColumn: "Imagem",
+                keyColumn: "ImagemUrl",
                 keyValue: null,
-                column: "Imagem",
+                column: "ImagemUrl",
                 value: "");
 
             migrationBuilder.AlterColumn<string>(
-                name: "Imagem",
+                name: "ImagemUrl",
                 table: "Categorias",
                 type: "varchar(300)",
                 maxLength: 300,
@@ -176,7 +176,7 @@ namespace projetoWebApi.Migrations
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AlterColumn<string>(
-                name: "Imagem",
+                name: "ImagemUrl",
                 table: "Categorias",
                 type: "longtext",
                 nullable: true,

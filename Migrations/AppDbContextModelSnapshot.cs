@@ -30,7 +30,7 @@ namespace projetoWebApi.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CategoriaId"));
 
-                    b.Property<string>("Imagem")
+                    b.Property<string>("ImagemUrl")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");

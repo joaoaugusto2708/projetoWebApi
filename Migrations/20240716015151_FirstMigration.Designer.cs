@@ -33,7 +33,7 @@ namespace projetoWebApi.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CategoriaId"));
 
-                    b.Property<string>("Imagem")
+                    b.Property<string>("ImagemUrl")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Nome")
