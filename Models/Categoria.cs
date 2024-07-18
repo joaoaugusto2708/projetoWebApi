@@ -19,7 +19,7 @@ public class Categoria
     public string? Nome { get; set; }
     [Required]
     [StringLength(300)]
-    public string? ImagemUrl { get; set; }
+    public string? Imagem { get; set; }
     [JsonIgnore]
     public ICollection<Produto>? Produtos { get; set; }
 }

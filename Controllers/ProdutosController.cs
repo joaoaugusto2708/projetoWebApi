@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using projetoWebApi.Context;
 using projetoWebApi.DTOs;
 using projetoWebApi.Models;
 using projetoWebApi.Repositories.Interfaces;
 
-namespace APICatalogo.Controllers;
+namespace projetoWebApi.Controllers;
 
 [Route("[controller]")]
 [ApiController]
@@ -67,6 +66,25 @@ public class ProdutosController : ControllerBase
         var novoProdutoDto = _mapper.Map<ProdutoDTO>(novoProduto);
         return new CreatedAtRouteResult("ObterProduto",
             new { id = novoProduto.ProdutoId }, novoProdutoDto);
+    }
+    [HttpPatch("{id}/UpdatePartial")]
+    public ActionResult<ProdutoDtoUpdateResponse> Patch(int id, JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDto)
+    {
+        if (patchProdutoDto is null || id <= 0)
+            return BadRequest();
+        var produto = _uof.ProdutoRepository.Get(c => c.ProdutoId == id);
+        if (produto is null)
+            return NotFound();
+        var produtoUpdateRequest = _mapper.Map<ProdutoDTOUpdateRequest>(produto);
+        patchProdutoDto.ApplyTo(produtoUpdateRequest, ModelState);
+        if (!ModelState.IsValid || TryValidateModel(produtoUpdateRequest))
+            return BadRequest(ModelState);
+
+        _mapper.Map(produtoUpdateRequest, produto);
+        _uof.ProdutoRepository.Update(produto);
+        _uof.Commit();
+        return Ok(_mapper.Map<ProdutoDtoUpdateResponse>(produto));
+    
     }
 
     [HttpPut("{id:int}")]

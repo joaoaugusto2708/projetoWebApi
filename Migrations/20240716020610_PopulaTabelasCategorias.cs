@@ -10,9 +10,9 @@ namespace projetoWebApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder mb)
         {
-            mb.Sql("Insert into Categorias(Nome, ImagemUrl) Values('Bebidas','bebidas.jpg')");
-            mb.Sql("Insert into Categorias(Nome, ImagemUrl) Values('Lanches','lanches.jpg')");
-            mb.Sql("Insert into Categorias(Nome, ImagemUrl) Values('Sobremesas','sobremesas.jpg')");
+            mb.Sql("Insert into Categorias(Nome, Imagem) Values('Bebidas','bebidas.jpg')");
+            mb.Sql("Insert into Categorias(Nome, Imagem) Values('Lanches','lanches.jpg')");
+            mb.Sql("Insert into Categorias(Nome, Imagem) Values('Sobremesas','sobremesas.jpg')");
         }
 
         /// <inheritdoc />

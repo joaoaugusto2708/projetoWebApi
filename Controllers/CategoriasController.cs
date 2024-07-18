@@ -1,9 +1,9 @@
-﻿using APICatalogo.DTOs.Mappings;
+﻿using projetoWebApi.DTOs.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using projetoWebApi.DTOs;
 using projetoWebApi.Repositories.Interfaces;
 
-namespace APICatalogo.Controllers;
+namespace projetoWebApi.Controllers;
 
 [Route("[controller]")]
 [ApiController]

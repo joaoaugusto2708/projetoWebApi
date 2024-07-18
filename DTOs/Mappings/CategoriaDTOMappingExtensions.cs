@@ -1,7 +1,7 @@
 ﻿using projetoWebApi.DTOs;
 using projetoWebApi.Models;
 
-namespace APICatalogo.DTOs.Mappings;
+namespace projetoWebApi.DTOs.Mappings;
 
 public static class CategoriaDTOMappingExtensions
 {
@@ -17,7 +17,7 @@ public static class CategoriaDTOMappingExtensions
         {
             CategoriaId = categoria.CategoriaId,
             Nome = categoria.Nome,
-            ImagemUrl = categoria.ImagemUrl
+            ImagemUrl = categoria.Imagem
         };
     }
 
@@ -32,7 +32,7 @@ public static class CategoriaDTOMappingExtensions
         {
             CategoriaId = categoriaDto.CategoriaId,
             Nome = categoriaDto.Nome,
-            ImagemUrl = categoriaDto.ImagemUrl
+            Imagem = categoriaDto.ImagemUrl
         };
     }
     public static IEnumerable<CategoriaDTO> ToCategoriaDTOList(this IEnumerable<Categoria> categorias)
@@ -47,7 +47,7 @@ public static class CategoriaDTOMappingExtensions
         {
             CategoriaId = categoria.CategoriaId,
             Nome = categoria.Nome,
-            ImagemUrl = categoria.ImagemUrl
+            ImagemUrl = categoria.Imagem
         }).ToList();
     }
 }
