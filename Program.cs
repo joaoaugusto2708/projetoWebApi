@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using projetoWebApi.Context;
+using projetoWebApi.DTOs.Mappings;
 using projetoWebApi.Filters;
 using projetoWebApi.Logging;
 using projetoWebApi.Repositories;
@@ -30,6 +31,7 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(ProdutoDTOMappingProfile));
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
 {
     LogLevel = LogLevel.Information
