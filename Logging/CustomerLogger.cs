@@ -31,7 +31,7 @@ namespace projetoWebApi.Logging
 
         private void EscreverTextoNoArquivo(string message)
         {
-            string caminhoArquivoLog = @"c:\dados\log\LogsCatalogo.txt";
+            string caminhoArquivoLog = @"C:\dados\log\LogsCatalogo.txt";
             using(StreamWriter streamWriter = new StreamWriter(caminhoArquivoLog, true))
             {
                 try

@@ -2,15 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using projetoWebApi.Context;
 using projetoWebApi.Filters;
 using projetoWebApi.Logging;
+using projetoWebApi.Repositories;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add(typeof(ApiExceptionFilter));
-})
+builder.Services.AddControllers()
 .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -27,7 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                     ServerVersion.AutoDetect(mySqlConnection)));
 
 builder.Services.AddScoped<ApiLoggingFilter>();
-
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
 {
     LogLevel = LogLevel.Information

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using projetoWebApi.Context;
 using projetoWebApi.Models;
+using projetoWebApi.Repositories;
 
 namespace APICatalogo.Controllers;
 
@@ -9,27 +10,29 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class CategoriasController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ICategoriaRepository _repository;
     private readonly ILogger<CategoriasController> _logger;
 
-    public CategoriasController(AppDbContext context, ILogger<CategoriasController> logger)
+    public CategoriasController(ICategoriaRepository repository, ILogger<CategoriasController> logger)
     {
-        _context = context;
+        _repository = repository;
         _logger = logger;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Categoria>>> Get()
+    public ActionResult<IEnumerable<Categoria>> Get()
     {
-        return await _context.Categorias.AsNoTracking().ToListAsync();
+        var categorias = _repository.GetCategorias();
+        return Ok(categorias);
+
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> Get(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+        var categoria = _repository.GetCategoria(id);
 
-        if (categoria == null)
+        if (categoria is null)
         {
             _logger.LogWarning($"Categoria com id= {id} não encontrada...");
             return NotFound($"Categoria com id= {id} não encontrada...");
@@ -46,8 +49,8 @@ public class CategoriasController : ControllerBase
             return BadRequest("Dados inválidos");
         }
 
-        _context.Categorias.Add(categoria);
-        _context.SaveChanges();
+        _repository.Create(categoria);
+
 
         return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
     }
@@ -61,15 +64,14 @@ public class CategoriasController : ControllerBase
             return BadRequest("Dados inválidos");
         }
 
-        _context.Entry(categoria).State = EntityState.Modified;
-        _context.SaveChanges();
+        _repository.Update(categoria);
         return Ok(categoria);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+        var categoria = _repository.GetCategoria(id);
 
         if (categoria == null)
         {
@@ -77,8 +79,7 @@ public class CategoriasController : ControllerBase
             return NotFound($"Categoria com id={id} não encontrada...");
         }
 
-        _context.Categorias.Remove(categoria);
-        _context.SaveChanges();
-        return Ok(categoria);
+        var categoriaExcluida = _repository.Delete(id);
+        return Ok(categoriaExcluida);
     }
 }
