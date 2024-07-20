@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using projetoWebApi.DTOs;
 using projetoWebApi.Repositories.Interfaces;
+using Newtonsoft.Json;
+using projetoWebApi.Pagination;
 
 namespace projetoWebApi.Controllers;
 
@@ -19,7 +21,23 @@ public class CategoriasController : ControllerBase
         _logger = logger;
         _uof = uof;
     }
-
+    [HttpGet("pagination")]
+    public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
+    {
+        var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
+        var metadata = new
+        {
+            categorias.TotalCount,
+            categorias.PageSize,
+            categorias.CurrentPage,
+            categorias.TotalPages,
+            categorias.HasNext,
+            categorias.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        var categoriasDto = categorias.ToCategoriaDTOList();
+        return Ok(categoriasDto);
+    }
     [HttpGet]
     public ActionResult<IEnumerable<CategoriaDTO>> Get()
     {
