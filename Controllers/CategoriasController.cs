@@ -4,6 +4,7 @@ using projetoWebApi.DTOs;
 using projetoWebApi.Repositories.Interfaces;
 using Newtonsoft.Json;
 using projetoWebApi.Pagination;
+using projetoWebApi.Models;
 
 namespace projetoWebApi.Controllers;
 
@@ -21,23 +22,21 @@ public class CategoriasController : ControllerBase
         _logger = logger;
         _uof = uof;
     }
+
     [HttpGet("pagination")]
     public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
     {
         var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
-        var metadata = new
-        {
-            categorias.TotalCount,
-            categorias.PageSize,
-            categorias.CurrentPage,
-            categorias.TotalPages,
-            categorias.HasNext,
-            categorias.HasPrevious
-        };
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-        var categoriasDto = categorias.ToCategoriaDTOList();
-        return Ok(categoriasDto);
+        return ObterCategoria(categorias);
     }
+
+    [HttpGet("filter/nome/pagination")]
+    public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaFiltroNome([FromQuery] CategoriasFiltroNome categoriaFilterNome)
+    {
+        var categorias = _uof.CategoriaRepository.GetCategoriasFiltroNome(categoriaFilterNome);
+        return ObterCategoria(categorias);
+    }
+
     [HttpGet]
     public ActionResult<IEnumerable<CategoriaDTO>> Get()
     {
@@ -124,5 +123,21 @@ public class CategoriasController : ControllerBase
         var categoriaExcluidaDto = categoriaExcluida.ToCategoriaDTO();
 
         return Ok(categoriaExcluidaDto);
+    }
+
+    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategoria(PagedList<Categoria> categorias)
+    {
+        var metadata = new
+        {
+            categorias.TotalCount,
+            categorias.PageSize,
+            categorias.CurrentPage,
+            categorias.TotalPages,
+            categorias.HasNext,
+            categorias.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        var categoriasDto = categorias.ToCategoriaDTOList();
+        return Ok(categoriasDto);
     }
 }
