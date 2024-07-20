@@ -27,6 +27,23 @@ namespace projetoWebApi.Repositories
             return produtosOrdenados;
         }
 
+        public PagedList<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroparams)
+        {
+            var produtos = GetAll().AsQueryable();
+
+            if(produtosFiltroparams.Preco.HasValue && !string.IsNullOrEmpty(produtosFiltroparams.PrecoCriterio))
+            {
+                if(produtosFiltroparams.PrecoCriterio.Equals("maior", StringComparison.OrdinalIgnoreCase))
+                    produtos = produtos.Where(p => p.Preco > produtosFiltroparams.Preco.Value).OrderBy(p => p.Preco);
+                else if (produtosFiltroparams.PrecoCriterio.Equals("menor", StringComparison.OrdinalIgnoreCase))
+                    produtos = produtos.Where(p => p.Preco < produtosFiltroparams.Preco.Value).OrderBy(p => p.Preco);
+                else if (produtosFiltroparams.PrecoCriterio.Equals("igual", StringComparison.OrdinalIgnoreCase))
+                    produtos = produtos.Where(p => p.Preco == produtosFiltroparams.Preco.Value).OrderBy(p => p.Preco);
+            }
+            var produtosFiltrado = PagedList<Produto>.ToPagedList(produtos, produtosFiltroparams.PageNumber, produtosFiltroparams.PageSize);
+            return produtosFiltrado;
+        }
+
         public IEnumerable<Produto> GetProdutosPorCategoria(int id)
         {
             return GetAll().Where(c => c.CategoriaId == id);

@@ -7,6 +7,7 @@ namespace projetoWebApi.Repositories.Interfaces
     {
         //IEnumerable<Produto> GetProdutos(ProdutosParameters produtoParams);
         PagedList<Produto> GetProdutos(ProdutosParameters produtoParams);
+        PagedList<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroparams);
         IEnumerable<Produto> GetProdutosPorCategoria(int id);
     }
 }
