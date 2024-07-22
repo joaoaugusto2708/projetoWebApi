@@ -49,7 +49,7 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ProdutoDTO>> Get()
     {
-        var produtos = _uof.ProdutoRepository.GetAll();
+        var produtos = _uof.ProdutoRepository.GetAllAsync();
         if (produtos is null)
         {
             return NotFound();

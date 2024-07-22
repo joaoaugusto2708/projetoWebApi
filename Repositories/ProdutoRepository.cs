@@ -13,7 +13,7 @@ namespace projetoWebApi.Repositories
 
         //public IEnumerable<Produto> GetProdutos(ProdutosParameters produtoParams)
         //{
-        //    return GetAll()
+        //    return GetAllAsync()
         //        .OrderBy(p => p.Nome)
         //        .Skip((produtoParams.PageNumber - 1) * produtoParams.PageSize)
         //        .Take(produtoParams.PageSize)
@@ -22,14 +22,14 @@ namespace projetoWebApi.Repositories
 
         public PagedList<Produto> GetProdutos(ProdutosParameters produtoParams)
         {
-            var produtos = GetAll().OrderBy(p => p.ProdutoId).AsQueryable();
+            var produtos = GetAllAsync().OrderBy(p => p.ProdutoId).AsQueryable();
             var produtosOrdenados = PagedList<Produto>.ToPagedList(produtos, produtoParams.PageNumber, produtoParams.PageSize);
             return produtosOrdenados;
         }
 
         public PagedList<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroparams)
         {
-            var produtos = GetAll().AsQueryable();
+            var produtos = GetAllAsync().AsQueryable();
 
             if(produtosFiltroparams.Preco.HasValue && !string.IsNullOrEmpty(produtosFiltroparams.PrecoCriterio))
             {
@@ -46,7 +46,7 @@ namespace projetoWebApi.Repositories
 
         public IEnumerable<Produto> GetProdutosPorCategoria(int id)
         {
-            return GetAll().Where(c => c.CategoriaId == id);
+            return GetAllAsync().Where(c => c.CategoriaId == id);
         }
     }
 }

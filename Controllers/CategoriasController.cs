@@ -40,7 +40,7 @@ public class CategoriasController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<CategoriaDTO>> Get()
     {
-        var categorias = _uof.CategoriaRepository.GetAll();
+        var categorias = _uof.CategoriaRepository.GetAllAsync();
 
         if (categorias is null)
             return NotFound("Não existem categorias...");
