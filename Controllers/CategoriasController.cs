@@ -33,7 +33,7 @@ public class CategoriasController : ControllerBase
     [HttpGet("filter/nome/pagination")]
     public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaFiltroNome([FromQuery] CategoriasFiltroNome categoriaFilterNome)
     {
-        var categorias = _uof.CategoriaRepository.GetCategoriasFiltroNome(categoriaFilterNome);
+        var categorias = _uof.CategoriaRepository.GetCategoriasFiltroNomeAsync(categoriaFilterNome);
         return ObterCategoria(categorias);
     }
 
@@ -78,7 +78,7 @@ public class CategoriasController : ControllerBase
         var categoria = categoriaDto.ToCategoria();
 
         var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
-        _uof.Commit();
+        _uof.CommitAsync();
 
         var novaCategoriaDto = categoriaCriada.ToCategoriaDTO();
 
@@ -99,7 +99,7 @@ public class CategoriasController : ControllerBase
         var categoria = categoriaDto.ToCategoria();
 
         var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria);
-        _uof.Commit();
+        _uof.CommitAsync();
 
         var categoriaAtualizadaDto = categoriaAtualizada.ToCategoriaDTO();
 
@@ -118,7 +118,7 @@ public class CategoriasController : ControllerBase
         }
 
         var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
-        _uof.Commit();
+        _uof.CommitAsync();
 
         var categoriaExcluidaDto = categoriaExcluida.ToCategoriaDTO();
 

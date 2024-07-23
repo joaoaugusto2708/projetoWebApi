@@ -24,21 +24,21 @@ public class ProdutosController : ControllerBase
     [HttpGet("pagination")]
     public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
     {
-        var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+        var produtos = _uof.ProdutoRepository.GetProdutosAsync(produtosParameters);
         return ObterProdutos(produtos);
     }
 
     [HttpGet("filter/preco/pagination")]
     public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFilterPreco([FromQuery] ProdutosFiltroPreco produtosFilterParameters)
     {
-        var produtos = _uof.ProdutoRepository.GetProdutosFiltroPreco(produtosFilterParameters);
+        var produtos = _uof.ProdutoRepository.GetProdutosFiltroPrecoAsync(produtosFilterParameters);
         return ObterProdutos(produtos);
     }
 
     [HttpGet("produtos/{id}")]
     public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosCategoria(int id)
     {
-        var produtos = _uof.ProdutoRepository.GetProdutosPorCategoria(id);
+        var produtos = _uof.ProdutoRepository.GetProdutosPorCategoriaAsync(id);
         if (produtos is null)
             return NotFound();
         var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
@@ -78,7 +78,7 @@ public class ProdutosController : ControllerBase
 
         var produto = _mapper.Map<Produto>(produtoDto);
         var novoProduto  = _uof.ProdutoRepository.Create(produto);
-        _uof.Commit();
+        _uof.CommitAsync();
         var novoProdutoDto = _mapper.Map<ProdutoDTO>(novoProduto);
         return new CreatedAtRouteResult("ObterProduto",
             new { id = novoProduto.ProdutoId }, novoProdutoDto);
@@ -98,7 +98,7 @@ public class ProdutosController : ControllerBase
 
         _mapper.Map(produtoUpdateRequest, produto);
         _uof.ProdutoRepository.Update(produto);
-        _uof.Commit();
+        _uof.CommitAsync();
         return Ok(_mapper.Map<ProdutoDtoUpdateResponse>(produto));
     
     }
@@ -111,7 +111,7 @@ public class ProdutosController : ControllerBase
 
         var produto = _mapper.Map<Produto>(produtoDto);
         var produtoAtualizado = _uof.ProdutoRepository.Update(produto);
-        _uof.Commit();
+        _uof.CommitAsync();
         var novoProdutoDto = _mapper.Map<ProdutoDTO>(produtoAtualizado);
         return Ok(novoProdutoDto);
         
@@ -124,7 +124,7 @@ public class ProdutosController : ControllerBase
         if (produto is null)
             return NotFound("Produto não encontrado");
         var produtoDeletado = _uof.ProdutoRepository.Delete(produto);
-        _uof.Commit();
+        _uof.CommitAsync();
         var produtoDeletadoDto = _mapper.Map<ProdutoDTO>(produtoDeletado);
         return Ok(produtoDeletadoDto);
     }
