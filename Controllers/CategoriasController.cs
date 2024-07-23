@@ -5,6 +5,7 @@ using projetoWebApi.Repositories.Interfaces;
 using Newtonsoft.Json;
 using projetoWebApi.Pagination;
 using projetoWebApi.Models;
+using X.PagedList;
 
 namespace projetoWebApi.Controllers;
 
@@ -51,7 +52,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
-    public async Task<ActionResult<CategoriaDTO>> Get(int id)
+    public async Task<ActionResult<CategoriaDTO>> GetAsync(int id)
     {
         var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
@@ -67,7 +68,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> PostAsync(CategoriaDTO categoriaDto)
     {
         if (categoriaDto is null)
         {
@@ -88,7 +89,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> PutAsync(int id, CategoriaDTO categoriaDto)
     {
         if (id != categoriaDto.CategoriaId)
         {
@@ -107,7 +108,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<CategoriaDTO>> Delete(int id)
+    public async Task<ActionResult<CategoriaDTO>> DeleteAsync(int id)
     {
         var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
@@ -125,16 +126,16 @@ public class CategoriasController : ControllerBase
         return Ok(categoriaExcluidaDto);
     }
 
-    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategoria(PagedList<Categoria> categorias)
+    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategoria(IPagedList<Categoria> categorias)
     {
         var metadata = new
         {
-            categorias.TotalCount,
+            categorias.Count,
             categorias.PageSize,
-            categorias.CurrentPage,
-            categorias.TotalPages,
-            categorias.HasNext,
-            categorias.HasPrevious
+            categorias.PageCount,
+            categorias.TotalItemCount,
+            categorias.HasNextPage,
+            categorias.HasPreviousPage
         };
         Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
         var categoriasDto = categorias.ToCategoriaDTOList();
