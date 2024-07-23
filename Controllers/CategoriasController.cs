@@ -24,23 +24,23 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet("pagination")]
-    public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync([FromQuery] CategoriasParameters categoriasParameters)
     {
-        var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
+        var categorias = await _uof.CategoriaRepository.GetCategoriasAsync(categoriasParameters);
         return ObterCategoria(categorias);
     }
 
     [HttpGet("filter/nome/pagination")]
-    public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaFiltroNome([FromQuery] CategoriasFiltroNome categoriaFilterNome)
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriaFiltroNomeAsync([FromQuery] CategoriasFiltroNome categoriaFilterNome)
     {
-        var categorias = _uof.CategoriaRepository.GetCategoriasFiltroNomeAsync(categoriaFilterNome);
+        var categorias = await _uof.CategoriaRepository.GetCategoriasFiltroNomeAsync(categoriaFilterNome);
         return ObterCategoria(categorias);
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<CategoriaDTO>> Get()
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync()
     {
-        var categorias = _uof.CategoriaRepository.GetAllAsync();
+        var categorias = await _uof.CategoriaRepository.GetAllAsync();
 
         if (categorias is null)
             return NotFound("Não existem categorias...");
@@ -51,9 +51,9 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
-    public ActionResult<CategoriaDTO> Get(int id)
+    public async Task<ActionResult<CategoriaDTO>> Get(int id)
     {
-        var categoria = _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
+        var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
         if (categoria is null)
         {
@@ -67,7 +67,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
     {
         if (categoriaDto is null)
         {
@@ -78,7 +78,7 @@ public class CategoriasController : ControllerBase
         var categoria = categoriaDto.ToCategoria();
 
         var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
-        _uof.CommitAsync();
+        await _uof.CommitAsync();
 
         var novaCategoriaDto = categoriaCriada.ToCategoriaDTO();
 
@@ -88,7 +88,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDto)
     {
         if (id != categoriaDto.CategoriaId)
         {
@@ -99,7 +99,7 @@ public class CategoriasController : ControllerBase
         var categoria = categoriaDto.ToCategoria();
 
         var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria);
-        _uof.CommitAsync();
+        await _uof.CommitAsync();
 
         var categoriaAtualizadaDto = categoriaAtualizada.ToCategoriaDTO();
 
@@ -107,9 +107,9 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult<CategoriaDTO> Delete(int id)
+    public async Task<ActionResult<CategoriaDTO>> Delete(int id)
     {
-        var categoria = _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
+        var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
         if (categoria is null)
         {
@@ -118,7 +118,7 @@ public class CategoriasController : ControllerBase
         }
 
         var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
-        _uof.CommitAsync();
+        await _uof.CommitAsync();
 
         var categoriaExcluidaDto = categoriaExcluida.ToCategoriaDTO();
 
