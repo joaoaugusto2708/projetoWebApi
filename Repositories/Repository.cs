@@ -41,5 +41,7 @@ namespace projetoWebApi.Repositories
             _context.Set<T>().Remove(entity);
             return entity;
         }
+
+        
     }
 }

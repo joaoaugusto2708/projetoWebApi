@@ -61,7 +61,7 @@ public class ProdutosController : ControllerBase
     [HttpGet("{id}", Name = "ObterProduto")]
     public ActionResult<ProdutoDTO> Get(int id)
     {
-        var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
+        var produto = _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
         if (produto is null)
         {
             return NotFound("Produto não encontrado...");
@@ -88,7 +88,7 @@ public class ProdutosController : ControllerBase
     {
         if (patchProdutoDto is null || id <= 0)
             return BadRequest();
-        var produto = _uof.ProdutoRepository.Get(c => c.ProdutoId == id);
+        var produto = _uof.ProdutoRepository.GetAsync(c => c.ProdutoId == id);
         if (produto is null)
             return NotFound();
         var produtoUpdateRequest = _mapper.Map<ProdutoDTOUpdateRequest>(produto);
@@ -120,7 +120,7 @@ public class ProdutosController : ControllerBase
     [HttpDelete("{id:int}")]
     public ActionResult<ProdutoDTO> Delete(int id)
     {
-        var produto = _uof.ProdutoRepository.Get(c => c.ProdutoId == id);
+        var produto = _uof.ProdutoRepository.GetAsync(c => c.ProdutoId == id);
         if (produto is null)
             return NotFound("Produto não encontrado");
         var produtoDeletado = _uof.ProdutoRepository.Delete(produto);
