@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using projetoWebApi.Pagination;
 using projetoWebApi.Models;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace projetoWebApi.Controllers;
 
@@ -39,6 +40,7 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync()
     {
         var categorias = await _uof.CategoriaRepository.GetAllAsync();
