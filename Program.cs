@@ -3,15 +3,21 @@ using APICatalogo.DTOs.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Logging;
 using APICatalogo.Models;
+using APICatalogo.RateLimitOptions;
 using APICatalogo.Repositories;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +32,41 @@ builder.Services.AddControllers(options =>
 })
 .AddNewtonsoftJson();
 
+var OrigensComAcessoPermitido = "_origensComAcessoPermitido";
+
+builder.Services.AddCors(options =>
+   options.AddPolicy(name: OrigensComAcessoPermitido,
+   policy =>
+   {
+       policy.WithOrigins("http://www.apirequest.io");
+   })
+);
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "apicatalogo", Version = "v1" });
+    //c.SwaggerDoc("v1", new OpenApiInfo { Title = "testev1", Version = "v1" });
+    //c.SwaggerDoc("v2", new OpenApiInfo { Title = "testev2", Version = "v2" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "APICatalogo",
+        Description = "Catálogo de Produtos e Categorias",
+        TermsOfService = new Uri("https://macoratti.net/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "macoratti",
+            Email = "macoratti@yahoo.com",
+            Url = new Uri("https://www.macoratti.net"),
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Usar sobre LICX",
+            Url = new Uri("https://macoratti.net/license"),
+        }
+    });
+
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
@@ -62,7 +98,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 string mySqlConnection = builder.Configuration
-                                .GetConnectionString("DefaultConnection");
+                                .GetConnectionString("DefaultConnection") ??
+                                throw new InvalidOperationException();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
                     options.UseMySql(mySqlConnection,
@@ -93,20 +130,58 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-
-    options.AddPolicy("SuperAdminOnly", policy =>
-                       policy.RequireRole("Admin").RequireClaim("id", "macoratti"));
-
-    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-
-    options.AddPolicy("ExclusiveOnly", policy =>
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .AddPolicy("SuperAdminOnly", policy =>
+                       policy.RequireRole("Admin").RequireClaim("id", "macoratti"))
+    .AddPolicy("UserOnly", policy => policy.RequireRole("User"))
+    .AddPolicy("ExclusiveOnly", policy =>
                       policy.RequireAssertion(context => 
                       context.User.HasClaim(claim =>
                                            claim.Type == "id" && claim.Value == "macoratti") 
                                            || context.User.IsInRole("SuperAdmin")));
+
+var myOptions = new MyRateLimitOptions();
+
+builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
+
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.AddFixedWindowLimiter(policyName: "fixedwindow", options =>
+    {
+        options.PermitLimit = myOptions.PermitLimit;//1;
+        options.Window = TimeSpan.FromSeconds(myOptions.Window);
+        options.QueueLimit = myOptions.QueueLimit;//2;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+    rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpcontext =>
+                            RateLimitPartition.GetFixedWindowLimiter(
+                                               partitionKey: httpcontext.User.Identity?.Name ??
+                                                             httpcontext.Request.Headers.Host.ToString(),
+                            factory: partition => new FixedWindowRateLimiterOptions
+                            {
+                                AutoReplenishment = true,
+                                PermitLimit = 2,
+                                QueueLimit = 0,
+                                Window = TimeSpan.FromSeconds(10)
+                            }));
+});
+
+var temp = builder.Services.AddApiVersioning(o =>
+{
+    o.DefaultApiVersion = new ApiVersion(1, 0);
+    o.AssumeDefaultVersionWhenUnspecified = true;
+    o.ReportApiVersions = true;
+    o.ApiVersionReader = ApiVersionReader.Combine(
+                          new QueryStringApiVersionReader(),
+                          new UrlSegmentApiVersionReader());
 });
 
 builder.Services.AddScoped<ApiLoggingFilter>();
@@ -128,11 +203,26 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    //Habilita o middleware para servir o Swagger 
+    //gerado como um endpoint  JSON       
     app.UseSwagger();
-    app.UseSwaggerUI();
+    //habilita o middleware de arquivos estaticos
+    //app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json",
+            "APICatalogo");
+    });
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseRateLimiter();
+
+app.UseCors(OrigensComAcessoPermitido);
+
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
