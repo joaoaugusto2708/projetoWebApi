@@ -1,7 +1,6 @@
-﻿namespace projetoWebApi.Pagination
+﻿namespace APICatalogo.Pagination;
+
+public class ProdutosParameters : QueryStringParameters
 {
-    public class ProdutosParameters : QueryStringParameters
-    {
-        
-    }
+   
 }

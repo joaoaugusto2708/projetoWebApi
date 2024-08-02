@@ -1,6 +1,5 @@
-﻿namespace projetoWebApi.Pagination
+﻿namespace APICatalogo.Pagination;
+
+public class CategoriasParameters: QueryStringParameters
 {
-    public class CategoriasParameters : QueryStringParameters
-    {
-    }
 }

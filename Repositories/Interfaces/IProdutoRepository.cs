@@ -1,5 +1,5 @@
-﻿using projetoWebApi.Models;
-using projetoWebApi.Pagination;
+﻿using APICatalogo.Models;
+using APICatalogo.Pagination;
 using X.PagedList;
 
 namespace projetoWebApi.Repositories.Interfaces

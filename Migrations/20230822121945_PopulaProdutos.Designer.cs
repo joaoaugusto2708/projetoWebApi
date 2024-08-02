@@ -3,37 +3,32 @@ using System;
 using APICatalogo.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace projetoWebApi.Migrations
+namespace APICatalogo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240716020319_ModificandoDomains")]
-    partial class ModificandoDomains
+    [Migration("20230822121945_PopulaProdutos")]
+    partial class PopulaProdutos
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("projetoWebApi.Models.Categoria", b =>
+            modelBuilder.Entity("APICatalogo.Models.Categoria", b =>
                 {
                     b.Property<int>("CategoriaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CategoriaId"));
-
-                    b.Property<string>("Imagem")
+                    b.Property<string>("ImagemUrl")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
@@ -48,13 +43,11 @@ namespace projetoWebApi.Migrations
                     b.ToTable("Categorias");
                 });
 
-            modelBuilder.Entity("projetoWebApi.Models.Produto", b =>
+            modelBuilder.Entity("APICatalogo.Models.Produto", b =>
                 {
                     b.Property<int>("ProdutoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ProdutoId"));
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
@@ -70,7 +63,7 @@ namespace projetoWebApi.Migrations
                     b.Property<float>("Estoque")
                         .HasColumnType("float");
 
-                    b.Property<string>("Imagem")
+                    b.Property<string>("ImagemUrl")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
@@ -87,12 +80,12 @@ namespace projetoWebApi.Migrations
 
                     b.HasIndex("CategoriaId");
 
-                    b.ToTable("Produto");
+                    b.ToTable("Produtos");
                 });
 
-            modelBuilder.Entity("projetoWebApi.Models.Produto", b =>
+            modelBuilder.Entity("APICatalogo.Models.Produto", b =>
                 {
-                    b.HasOne("projetoWebApi.Models.Categoria", "Categoria")
+                    b.HasOne("APICatalogo.Models.Categoria", "Categoria")
                         .WithMany("Produtos")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -101,7 +94,7 @@ namespace projetoWebApi.Migrations
                     b.Navigation("Categoria");
                 });
 
-            modelBuilder.Entity("projetoWebApi.Models.Categoria", b =>
+            modelBuilder.Entity("APICatalogo.Models.Categoria", b =>
                 {
                     b.Navigation("Produtos");
                 });

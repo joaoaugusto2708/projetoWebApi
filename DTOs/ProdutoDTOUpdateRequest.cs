@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace projetoWebApi.DTOs;
+namespace APICatalogo.DTOs;
 
 public class ProdutoDTOUpdateRequest : IValidatableObject
 {
@@ -12,7 +12,7 @@ public class ProdutoDTOUpdateRequest : IValidatableObject
     {
         if (DataCadastro.Date <= DateTime.Now.Date)
         {
-            yield return new ValidationResult("A Data deve ser maior que a data atual.", new[] { nameof(this.DataCadastro) });
+            yield return new ValidationResult("A Data deve ser maior que a data atual.", new[] { nameof(this.DataCadastro) } );
         }
     }
 }

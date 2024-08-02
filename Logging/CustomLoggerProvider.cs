@@ -1,25 +1,24 @@
 ﻿using System.Collections.Concurrent;
 
-namespace projetoWebApi.Logging
+namespace APICatalogo.Logging;
+
+public class CustomLoggerProvider : ILoggerProvider
 {
-    public class CustomLoggerProvider : ILoggerProvider
+    readonly CustomLoggerProviderConfiguration loggerConfig;
+
+    readonly ConcurrentDictionary<string, CustomerLogger> loggers =
+               new ConcurrentDictionary<string, CustomerLogger>();
+
+    public CustomLoggerProvider(CustomLoggerProviderConfiguration config)
     {
-        readonly CustomLoggerProviderConfiguration configuration;
-        readonly ConcurrentDictionary<string, CustomerLogger> loggers = new ConcurrentDictionary<string, CustomerLogger>();
-
-        public CustomLoggerProvider(CustomLoggerProviderConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
-
-        public ILogger CreateLogger(string categoryName)
-        {
-            return loggers.GetOrAdd(categoryName, name => new CustomerLogger(name, configuration));
-        }
-
-        public void Dispose()
-        {
-            loggers.Clear();
-        }
+        loggerConfig = config;
+    }
+    public ILogger CreateLogger(string categoryName)
+    {
+        return loggers.GetOrAdd(categoryName, name => new CustomerLogger(name, loggerConfig));
+    }
+    public void Dispose()
+    {
+        loggers.Clear();
     }
 }

@@ -1,48 +1,47 @@
-﻿
-namespace projetoWebApi.Logging
+﻿namespace APICatalogo.Logging;
+
+public class CustomerLogger : ILogger
 {
-    public class CustomerLogger : ILogger
+    readonly string loggerName;
+    readonly CustomLoggerProviderConfiguration loggerConfig;
+
+    public CustomerLogger(string name, CustomLoggerProviderConfiguration config)
     {
-        readonly string loggerName;
-        readonly CustomLoggerProviderConfiguration loggerConfig;
+        loggerName = name;
+        loggerConfig = config;
+    }
 
-        public CustomerLogger(string loggerName, CustomLoggerProviderConfiguration loggerConfig)
+    public IDisposable BeginScope<TState>(TState state)
+    {
+        return null;
+    }
+
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        return logLevel == loggerConfig.LogLevel;
+    }
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
+            Exception exception, Func<TState, Exception, string> formatter)
+    {
+        string mensagem = $"{logLevel.ToString()}: {eventId.Id} - {formatter(state, exception)}";
+
+        EscreverTextoNoArquivo(mensagem);
+    }
+
+    private void EscreverTextoNoArquivo(string mensagem)
+    {
+        string caminhoArquivoLog = @"d:\dados\log\Macoratti_Log.txt";
+        using (StreamWriter streamWriter = new StreamWriter(caminhoArquivoLog, true))
         {
-            this.loggerName = loggerName;
-            this.loggerConfig = loggerConfig;
-        }
-
-        public IDisposable? BeginScope<TState>(TState state)
-        {
-            return null;
-        }
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return logLevel == loggerConfig.LogLevel;
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-        {
-            string message = $"{logLevel.ToString()}: {eventId} - {formatter(state, exception)}";
-
-            EscreverTextoNoArquivo(message);
-        }
-
-        private void EscreverTextoNoArquivo(string message)
-        {
-            string caminhoArquivoLog = @"C:\dados\log\LogsCatalogo.txt";
-            using(StreamWriter streamWriter = new StreamWriter(caminhoArquivoLog, true))
+            try
             {
-                try
-                {
-                    streamWriter.WriteLine(message);
-                    streamWriter.Close();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                streamWriter.WriteLine(mensagem);
+                streamWriter.Close();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

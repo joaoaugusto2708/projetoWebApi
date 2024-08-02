@@ -1,43 +1,36 @@
-﻿using projetoWebApi.DTOs;
-using projetoWebApi.Models;
+﻿using APICatalogo.Models;
 
-namespace projetoWebApi.DTOs.Mappings;
+namespace APICatalogo.DTOs.Mappings;
 
 public static class CategoriaDTOMappingExtensions
 {
-
     public static CategoriaDTO? ToCategoriaDTO(this Categoria categoria)
     {
         if (categoria is null)
-        {
             return null;
-        }
 
         return new CategoriaDTO
         {
             CategoriaId = categoria.CategoriaId,
             Nome = categoria.Nome,
-            ImagemUrl = categoria.Imagem
+            ImagemUrl = categoria.ImagemUrl
         };
     }
 
     public static Categoria? ToCategoria(this CategoriaDTO categoriaDto)
     {
-        if (categoriaDto is null)
-        {
-            return null;
-        }
+        if (categoriaDto is null) return null;
 
         return new Categoria
         {
             CategoriaId = categoriaDto.CategoriaId,
             Nome = categoriaDto.Nome,
-            Imagem = categoriaDto.ImagemUrl
+            ImagemUrl = categoriaDto.ImagemUrl
         };
     }
+
     public static IEnumerable<CategoriaDTO> ToCategoriaDTOList(this IEnumerable<Categoria> categorias)
     {
-
         if (categorias is null || !categorias.Any())
         {
             return new List<CategoriaDTO>();
@@ -47,7 +40,7 @@ public static class CategoriaDTOMappingExtensions
         {
             CategoriaId = categoria.CategoriaId,
             Nome = categoria.Nome,
-            ImagemUrl = categoria.Imagem
+            ImagemUrl = categoria.ImagemUrl
         }).ToList();
     }
 }
